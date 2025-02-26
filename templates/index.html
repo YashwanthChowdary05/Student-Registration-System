@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #83aded;
+            color: solid black;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-color: black;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 30px;
+            color: #1e2a3d;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            font-size: 24px;
+            color: #1e2a3d;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            box-shadow: none;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            padding: 12px;
+        }
+
+        .form-control:focus {
+            border-color: blue;
+            box-shadow: 0 0 5px rgba(67, 128, 194, 0.573);
+        }
+
+        .btn-primary {
+            background-color: rgb(62, 62, 255);
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: rgb(41, 87, 255);
+        }
+
+        .alert {
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert.alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert.alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #7ad47d;
+            color: white;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f9f4;
+        }
+
+        .table-bordered {
+            border: 1px solid #ddd;
+        }
+
+        .table-bordered th, .table-bordered td {
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Student Registration Form</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/" method="POST" class="border p-4 rounded">
+            <div class="mb-3">
+                <label for="name" class="form-label">Student Name:</label>
+                <input type="text" class="form-control" value="{{ form_data.get('name', '') }}" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="class" class="form-label">Class:</label>
+                <input type="text" class="form-control" value="{{ form_data.get('student_class', '') }}" name="student_class" required>
+            </div>
+            <div class="mb-3">
+                <label for="father_name" class="form-label">Father's Name:</label>
+                <input type="text" class="form-control" value="{{ form_data.get('father_name', '') }}" name="father_name">
+            </div>
+            <div class="mb-3">
+                <label for="mother_name" class="form-label">Mother's Name:</label>
+                <input type="text" class="form-control" value="{{ form_data.get('mother_name', '') }}" name="mother_name">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number:</label>
+                <input type="text" class="form-control" value="{{ form_data.get('phone', '') }}" name="phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" value="{{ form_data.get('email', '') }}" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <h3>Registered Students</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Father's Name</th>
+                    <th>Mother's Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student[0] }}</td>
+                    <td>{{ student[1] }}</td>
+                    <td>{{ student[2] }}</td>
+                    <td>{{ student[3] }}</td>
+                    <td>{{ student[4] }}</td>
+                    <td>{{ student[5] }}</td>
+                    <td>{{ student[6] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-success mt-3" onclick="updateExcel()">Update Excel</button>
+        <script>
+            function updateExcel() {
+                fetch('/update-excel', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === "success") {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error updating Excel:', error));
+            }
+        </script>
+    </div>
+</body>
+</html>
